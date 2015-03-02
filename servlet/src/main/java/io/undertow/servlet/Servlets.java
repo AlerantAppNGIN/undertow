@@ -156,7 +156,7 @@ public class Servlets {
         return new WebResourceCollection();
     }
 
-    private Servlets() {
+    protected Servlets() {
     }
 
     public static LoginConfig loginConfig(String realmName, String loginPage, String errorPage) {

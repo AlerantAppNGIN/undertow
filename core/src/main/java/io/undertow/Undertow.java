@@ -20,11 +20,15 @@ package io.undertow;
 
 import io.undertow.protocols.ssl.UndertowXnioSsl;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.udp.UdpHandler;
 import io.undertow.server.protocol.ajp.AjpOpenListener;
 import io.undertow.server.protocol.http.AlpnOpenListener;
 import io.undertow.server.protocol.http.HttpOpenListener;
 import io.undertow.server.protocol.http2.Http2OpenListener;
 import io.undertow.server.protocol.spdy.SpdyOpenListener;
+import io.undertow.server.protocol.udp.UdpOpenListener;
+import io.undertow.server.protocol.udp.UdpReadListener;
+import io.undertow.server.protocol.udp.UdpWriteListener;
 import org.xnio.BufferAllocator;
 import org.xnio.ByteBufferSlicePool;
 import org.xnio.ChannelListener;
@@ -38,12 +42,14 @@ import org.xnio.StreamConnection;
 import org.xnio.Xnio;
 import org.xnio.XnioWorker;
 import org.xnio.channels.AcceptingChannel;
+import org.xnio.channels.MulticastMessageChannel;
 import org.xnio.ssl.SslConnection;
 import org.xnio.ssl.XnioSsl;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
+
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -65,6 +71,7 @@ public final class Undertow {
     private final boolean directBuffers;
     private final List<ListenerConfig> listeners = new ArrayList<>();
     private final HttpHandler rootHandler;
+    private final UdpHandler udpRootHandler;
     private final OptionMap workerOptions;
     private final OptionMap socketOptions;
     private final OptionMap serverOptions;
@@ -84,6 +91,7 @@ public final class Undertow {
         this.workerOptions = builder.workerOptions.getMap();
         this.socketOptions = builder.socketOptions.getMap();
         this.serverOptions = builder.serverOptions.getMap();
+        this.udpRootHandler = builder.udpHandler;
     }
 
     /**
@@ -172,6 +180,22 @@ public final class Undertow {
                         AcceptingChannel<SslConnection> sslServer = xnioSsl.createSslConnectionServer(worker, new InetSocketAddress(Inet4Address.getByName(listener.host), listener.port), (ChannelListener) acceptListener, socketOptions);
                         sslServer.resumeAccepts();
                         channels.add(sslServer);
+                    } else if (listener.type == ListenerType.UDP){
+                        //TODO + SEND_BUFFER_SIZE???
+                        final int MAX_RECEIVE_BUFFER_SIZE=65535;
+                        OptionMap udpSocketOptions = OptionMap.builder().set(Options.MULTICAST, false).set(Options.RECEIVE_BUFFER, MAX_RECEIVE_BUFFER_SIZE).addAll(socketOptions).getMap();
+
+                        UdpOpenListener udpOpenListener = new UdpOpenListener(udpRootHandler);
+
+                        MulticastMessageChannel server = worker.createUdpServer(new InetSocketAddress(Inet4Address.getByName(listener.host), listener.port), udpOpenListener, udpSocketOptions);
+
+                        UdpReadListener readListerner = new UdpReadListener(udpRootHandler, MAX_RECEIVE_BUFFER_SIZE);
+                        UdpWriteListener writeListerner = new UdpWriteListener();
+
+                        server.getReadSetter().set(readListerner);
+                        server.getWriteSetter().set(writeListerner);
+
+                        server.resumeReads();
                     }
                 }
 
@@ -196,7 +220,8 @@ public final class Undertow {
     public static enum ListenerType {
         HTTP,
         HTTPS,
-        AJP
+        AJP,
+        UDP
     }
 
     private static class ListenerConfig {
@@ -235,6 +260,7 @@ public final class Undertow {
         private boolean directBuffers;
         private final List<ListenerConfig> listeners = new ArrayList<>();
         private HttpHandler handler;
+        private UdpHandler udpHandler;
 
         private final OptionMap.Builder workerOptions = OptionMap.builder();
         private final OptionMap.Builder socketOptions = OptionMap.builder();
@@ -279,6 +305,12 @@ public final class Undertow {
             listeners.add(new ListenerConfig(ListenerType.HTTP, port, host, null, null));
             return this;
         }
+
+       public Builder addUdpListener(int port, String host) {
+            listeners.add(new ListenerConfig(ListenerType.UDP, port, host, null, null));
+            return this;
+        }
+
 
         public Builder addHttpsListener(int port, String host, KeyManager[] keyManagers, TrustManager[] trustManagers) {
             listeners.add(new ListenerConfig(ListenerType.HTTPS, port, host, keyManagers, trustManagers));
@@ -331,6 +363,10 @@ public final class Undertow {
             return this;
         }
 
+        public Builder setHandler(final UdpHandler handler) {
+            this.udpHandler = handler;
+            return this;
+        }
         public <T> Builder setServerOption(final Option<T> option, final T value) {
             serverOptions.set(option, value);
             return this;
