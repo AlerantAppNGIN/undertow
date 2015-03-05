@@ -37,8 +37,8 @@ import io.undertow.servlet.api.ServletContainer;
 public class ServletContainerImpl implements ServletContainer {
 
 
-    private final Map<String, DeploymentManager> deployments = Collections.synchronizedMap(new HashMap<String, DeploymentManager>());
-    private final Map<String, DeploymentManager> deploymentsByPath = Collections.synchronizedMap(new HashMap<String, DeploymentManager>());
+    protected final Map<String, DeploymentManager> deployments = Collections.synchronizedMap(new HashMap<String, DeploymentManager>());
+    protected final Map<String, DeploymentManager> deploymentsByPath = Collections.synchronizedMap(new HashMap<String, DeploymentManager>());
 
     @Override
     public Collection<String> listDeployments() {

@@ -1,5 +1,6 @@
 package io.undertow.server.handlers.udp;
 
+import io.undertow.UndertowLogger;
 import io.undertow.server.protocol.udp.UdpMessage;
 
 import java.io.IOException;
@@ -17,19 +18,19 @@ public abstract class UdpHandler {
         channel.resumeWrites();
 
         try {
+
             boolean sent = channel
                     .sendTo(message.getAddressBuffer().getDestinationAddress(), message.getBufferedData());
 
             if (sent) {
-                System.out.println("Outgoing UDP data sent: "
+                UndertowLogger.REQUEST_LOGGER.debug("Outgoing UDP data sent: "
                         + new String(message.getBufferedData().array(), java.nio.charset.StandardCharsets.UTF_8));
             } else {
-                System.out.println("No  UDP data sent!");
+                UndertowLogger.REQUEST_LOGGER.debug("No UDP data sent!");
             }
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            UndertowLogger.REQUEST_LOGGER.error(e.getMessage(), e);
         } finally {
             channel.suspendWrites();
         }

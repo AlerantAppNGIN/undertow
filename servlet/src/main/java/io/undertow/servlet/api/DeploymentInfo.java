@@ -1100,6 +1100,10 @@ public class DeploymentInfo implements Cloneable {
         this.defaultMultipartConfig = defaultMultipartConfig;
     }
 
+    public Object clone(String s) throws CloneNotSupportedException{
+        return super.clone();
+    }
+
     @Override
     public DeploymentInfo clone() {
         final DeploymentInfo info = new DeploymentInfo()

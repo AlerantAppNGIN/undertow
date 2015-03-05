@@ -123,7 +123,7 @@ public class DeploymentManagerImpl implements DeploymentManager {
     /**
      * Current deployment, this may be modified by SCI's
      */
-    private volatile DeploymentImpl deployment;
+    protected volatile DeploymentImpl deployment;
     private volatile State state = State.UNDEPLOYED;
 
     public DeploymentManagerImpl(final DeploymentInfo deployment, final ServletContainer servletContainer) {
@@ -225,7 +225,7 @@ public class DeploymentManagerImpl implements DeploymentManager {
         state = State.DEPLOYED;
     }
 
-    private void createServletsAndFilters(final DeploymentImpl deployment, final DeploymentInfo deploymentInfo) {
+    protected void createServletsAndFilters(final DeploymentImpl deployment, final DeploymentInfo deploymentInfo) {
         for (Map.Entry<String, ServletInfo> servlet : deploymentInfo.getServlets().entrySet()) {
             deployment.getServlets().addServlet(servlet.getValue());
         }
@@ -234,7 +234,7 @@ public class DeploymentManagerImpl implements DeploymentManager {
         }
     }
 
-    private void handleExtensions(final DeploymentInfo deploymentInfo, final ServletContextImpl servletContext) {
+    protected void handleExtensions(final DeploymentInfo deploymentInfo, final ServletContextImpl servletContext) {
         Set<Class<?>> loadedExtensions = new HashSet<>();
 
         for (ServletExtension extension : ServiceLoader.load(ServletExtension.class, deploymentInfo.getClassLoader())) {
@@ -265,7 +265,7 @@ public class DeploymentManagerImpl implements DeploymentManager {
      *
      * @param initialHandler The handler to wrap with security handlers
      */
-    private HttpHandler setupSecurityHandlers(HttpHandler initialHandler) {
+    protected HttpHandler setupSecurityHandlers(HttpHandler initialHandler) {
         final DeploymentInfo deploymentInfo = deployment.getDeploymentInfo();
         final LoginConfig loginConfig = deploymentInfo.getLoginConfig();
 
@@ -420,7 +420,7 @@ public class DeploymentManagerImpl implements DeploymentManager {
         return builder.build();
     }
 
-    private void initializeTempDir(final ServletContextImpl servletContext, final DeploymentInfo deploymentInfo) {
+    protected void initializeTempDir(final ServletContextImpl servletContext, final DeploymentInfo deploymentInfo) {
         if (deploymentInfo.getTempDir() != null) {
             servletContext.setAttribute(ServletContext.TEMPDIR, deploymentInfo.getTempDir());
         } else {
@@ -428,7 +428,7 @@ public class DeploymentManagerImpl implements DeploymentManager {
         }
     }
 
-    private void initializeMimeMappings(final DeploymentImpl deployment, final DeploymentInfo deploymentInfo) {
+    protected void initializeMimeMappings(final DeploymentImpl deployment, final DeploymentInfo deploymentInfo) {
         final Map<String, String> mappings = new HashMap<>(MimeMappings.DEFAULT_MIME_MAPPINGS);
         for (MimeMapping mapping : deploymentInfo.getMimeMappings()) {
             mappings.put(mapping.getExtension(), mapping.getMimeType());
@@ -436,7 +436,7 @@ public class DeploymentManagerImpl implements DeploymentManager {
         deployment.setMimeExtensionMappings(mappings);
     }
 
-    private void initializeErrorPages(final DeploymentImpl deployment, final DeploymentInfo deploymentInfo) {
+    protected void initializeErrorPages(final DeploymentImpl deployment, final DeploymentInfo deploymentInfo) {
         final Map<Integer, String> codes = new HashMap<>();
         final Map<Class<? extends Throwable>, String> exceptions = new HashMap<>();
         String defaultErrorPage = null;
@@ -457,7 +457,7 @@ public class DeploymentManagerImpl implements DeploymentManager {
     }
 
 
-    private ApplicationListeners createListeners() {
+    protected ApplicationListeners createListeners() {
         final List<ManagedListener> managedListeners = new ArrayList<>();
         for (final ListenerInfo listener : deployment.getDeploymentInfo().getListeners()) {
             managedListeners.add(new ManagedListener(listener, false));
@@ -466,7 +466,7 @@ public class DeploymentManagerImpl implements DeploymentManager {
     }
 
 
-    private static HttpHandler wrapHandlers(final HttpHandler wrapee, final List<HandlerWrapper> wrappers) {
+    protected static HttpHandler wrapHandlers(final HttpHandler wrapee, final List<HandlerWrapper> wrappers) {
         HttpHandler current = wrapee;
         for (HandlerWrapper wrapper : wrappers) {
             current = wrapper.wrap(current);
@@ -535,7 +535,7 @@ public class DeploymentManagerImpl implements DeploymentManager {
         state = State.DEPLOYED;
     }
 
-    private HttpHandler handleDevelopmentModePersistentSessions(HttpHandler next, final DeploymentInfo deploymentInfo, final SessionManager sessionManager, final ServletContextImpl servletContext) {
+    protected HttpHandler handleDevelopmentModePersistentSessions(HttpHandler next, final DeploymentInfo deploymentInfo, final SessionManager sessionManager, final ServletContextImpl servletContext) {
         final SessionPersistenceManager sessionPersistenceManager = deploymentInfo.getSessionPersistenceManager();
         if (sessionPersistenceManager != null) {
             SessionRestoringHandler handler = new SessionRestoringHandler(deployment.getDeploymentInfo().getDeploymentName(), sessionManager, servletContext, next, sessionPersistenceManager);

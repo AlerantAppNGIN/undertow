@@ -1,5 +1,6 @@
 package io.undertow.server.protocol.udp;
 
+import io.undertow.UndertowLogger;
 import io.undertow.server.handlers.udp.UdpHandler;
 
 import org.xnio.ChannelListener;
@@ -15,7 +16,7 @@ public class UdpOpenListener implements ChannelListener<MulticastMessageChannel>
 
     @Override
     public void handleEvent(MulticastMessageChannel channel) {
-        System.out.println("UdpOpenListener invoked!");
+        UndertowLogger.REQUEST_LOGGER.debug("UdpOpenListener invoked!");
 
         rootHandler.addChannel(channel);
     }

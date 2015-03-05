@@ -181,9 +181,10 @@ public final class Undertow {
                         sslServer.resumeAccepts();
                         channels.add(sslServer);
                     } else if (listener.type == ListenerType.UDP){
-                        //TODO + SEND_BUFFER_SIZE???
+                        //TODO parameterable?
                         final int MAX_RECEIVE_BUFFER_SIZE=65535;
-                        OptionMap udpSocketOptions = OptionMap.builder().set(Options.MULTICAST, false).set(Options.RECEIVE_BUFFER, MAX_RECEIVE_BUFFER_SIZE).addAll(socketOptions).getMap();
+                        final int MAX_SEND_BUFFER_SIZE=65535;
+                        OptionMap udpSocketOptions = OptionMap.builder().set(Options.MULTICAST, false).set(Options.RECEIVE_BUFFER, MAX_RECEIVE_BUFFER_SIZE).set(Options.SEND_BUFFER, MAX_SEND_BUFFER_SIZE).addAll(socketOptions).getMap();
 
                         UdpOpenListener udpOpenListener = new UdpOpenListener(udpRootHandler);
 

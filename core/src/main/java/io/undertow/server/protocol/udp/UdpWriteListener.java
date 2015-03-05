@@ -7,7 +7,7 @@ public class UdpWriteListener implements ChannelListener<MulticastMessageChannel
 
     @Override
     public void handleEvent(MulticastMessageChannel channel) {
-        System.out.println("UdpWriteListener invoked!");
+        //System.out.println("UdpWriteListener invoked!");
     }
 
 }

@@ -96,7 +96,7 @@ public class DeploymentImpl implements Deployment {
         return filters;
     }
 
-    void setApplicationListeners(final ApplicationListeners applicationListeners) {
+    public void setApplicationListeners(final ApplicationListeners applicationListeners) {
         this.applicationListeners = applicationListeners;
     }
 
@@ -128,7 +128,7 @@ public class DeploymentImpl implements Deployment {
         this.initialHandler = initialHandler;
     }
 
-    void setServletHandler(final ServletInitialHandler servletHandler) {
+    public void setServletHandler(final ServletInitialHandler servletHandler) {
         this.servletHandler = servletHandler;
     }
 
