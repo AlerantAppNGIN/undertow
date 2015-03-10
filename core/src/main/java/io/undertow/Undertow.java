@@ -20,7 +20,7 @@ package io.undertow;
 
 import io.undertow.protocols.ssl.UndertowXnioSsl;
 import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.udp.UdpHandler;
+import io.undertow.server.handlers.udp.RootUdpHandler;
 import io.undertow.server.protocol.ajp.AjpOpenListener;
 import io.undertow.server.protocol.http.AlpnOpenListener;
 import io.undertow.server.protocol.http.HttpOpenListener;
@@ -29,6 +29,7 @@ import io.undertow.server.protocol.spdy.SpdyOpenListener;
 import io.undertow.server.protocol.udp.UdpOpenListener;
 import io.undertow.server.protocol.udp.UdpReadListener;
 import io.undertow.server.protocol.udp.UdpWriteListener;
+
 import org.xnio.BufferAllocator;
 import org.xnio.ByteBufferSlicePool;
 import org.xnio.ChannelListener;
@@ -71,7 +72,7 @@ public final class Undertow {
     private final boolean directBuffers;
     private final List<ListenerConfig> listeners = new ArrayList<>();
     private final HttpHandler rootHandler;
-    private final UdpHandler udpRootHandler;
+    private final RootUdpHandler udpRootHandler;
     private final OptionMap workerOptions;
     private final OptionMap socketOptions;
     private final OptionMap serverOptions;
@@ -261,7 +262,7 @@ public final class Undertow {
         private boolean directBuffers;
         private final List<ListenerConfig> listeners = new ArrayList<>();
         private HttpHandler handler;
-        private UdpHandler udpHandler;
+        private RootUdpHandler udpHandler;
 
         private final OptionMap.Builder workerOptions = OptionMap.builder();
         private final OptionMap.Builder socketOptions = OptionMap.builder();
@@ -364,7 +365,7 @@ public final class Undertow {
             return this;
         }
 
-        public Builder setHandler(final UdpHandler handler) {
+        public Builder setHandler(final RootUdpHandler handler) {
             this.udpHandler = handler;
             return this;
         }

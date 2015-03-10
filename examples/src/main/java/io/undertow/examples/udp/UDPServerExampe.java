@@ -20,7 +20,7 @@ package io.undertow.examples.udp;
 
 import io.undertow.Undertow;
 import io.undertow.examples.UndertowExample;
-import io.undertow.server.handlers.udp.UdpHandler;
+import io.undertow.server.handlers.udp.RootUdpHandler;
 import io.undertow.server.protocol.udp.UdpMessage;
 
 /**
@@ -30,7 +30,7 @@ import io.undertow.server.protocol.udp.UdpMessage;
 public class UDPServerExampe {
 
     public static void main(final String[] args) {
-        Undertow server = Undertow.builder().addUdpListener(5080, "127.0.0.1").setHandler(new UdpHandler() {
+        Undertow server = Undertow.builder().addUdpListener(5080, "127.0.0.1").setHandler(new RootUdpHandler() {
             @Override
             public void handleRequest(UdpMessage message) {
                 // siple echo test:
