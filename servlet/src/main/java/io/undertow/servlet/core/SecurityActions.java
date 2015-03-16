@@ -32,7 +32,8 @@ import io.undertow.servlet.handlers.ServletRequestContext;
 import io.undertow.servlet.spec.HttpSessionImpl;
 import io.undertow.servlet.spec.ServletContextImpl;
 
-final class SecurityActions {
+//FIXME public
+public final class SecurityActions {
 
     private SecurityActions() {
         // forbidden inheritance
@@ -125,7 +126,8 @@ final class SecurityActions {
         }
     }
 
-    static ServletInitialHandler createServletInitialHandler(final ServletPathMatches paths, final HttpHandler next, final CompositeThreadSetupAction setupAction, final ServletContextImpl servletContext) {
+    //FIXME public
+    public static ServletInitialHandler createServletInitialHandler(final ServletPathMatches paths, final HttpHandler next, final CompositeThreadSetupAction setupAction, final ServletContextImpl servletContext) {
         if (System.getSecurityManager() == null) {
             return new ServletInitialHandler(paths, next, setupAction, servletContext);
         } else {

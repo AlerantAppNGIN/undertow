@@ -34,7 +34,8 @@ import java.util.Map;
 /**
  * @author Tomaz Cerar (c) 2014 Red Hat Inc.
  */
-class MetricsChainHandler implements HttpHandler {
+//FIXME public
+public class MetricsChainHandler implements HttpHandler {
 
 
     private final HttpHandler next;
