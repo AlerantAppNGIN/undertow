@@ -132,11 +132,13 @@ public class DeploymentImpl implements Deployment {
         this.servletHandler = servletHandler;
     }
 
-    void addLifecycleObjects(final Collection<Lifecycle> objects) {
+    //FIXME public addLifecycleObjects
+    public void addLifecycleObjects(final Collection<Lifecycle> objects) {
         lifecycleObjects.addAll(objects);
     }
 
-    void addLifecycleObjects(final Lifecycle... objects) {
+    //FIXME public addLifecycleObjects
+    public void addLifecycleObjects(final Lifecycle... objects) {
         lifecycleObjects.addAll(Arrays.asList(objects));
     }
 
